@@ -49,6 +49,18 @@ class SuffixTree {
      */
     ActiveStore canonize(Node *pNode, EdgeString edgeString);
 
+    /**
+     * TODO : add documentation
+     * @param n
+     * @param eStr
+     * @param ch
+     * @param str
+     * @param nNode
+     * @return
+     */
+    bool testAndSplit(Node* n, EdgeString eStr, char ch, const std::string& str,
+                      Node** nNode);
+
 public:
     void insert(const std::string& word);
 

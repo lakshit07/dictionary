@@ -37,9 +37,9 @@ struct Node {
 
     Node() : m_suffixLink(nullptr) {}
 
-    std::optional<Transition> next(char ch) {
+    Transition next(char ch) {
         if (m_transitionMap.find(ch) == m_transitionMap.end()) {
-            return std::nullopt;
+            return {{0, 0, -1}, nullptr};
         }
         return m_transitionMap[ch];
     }
