@@ -7,6 +7,7 @@ void SuffixTree::insert(const std::string &word) {
         return;
 
     m_index++;
+    m_stringMap[m_index] = word;
     insertUtil(it, m_index);
 }
 
@@ -21,9 +22,53 @@ void SuffixTree::insertUtil(std::unordered_set<std::string>::const_iterator it,
 
     int offset = pivot.value();
     for (int i = offset ; i < (*it).size() ; ++i) {
+        EdgeString eStr {index, active.m_length, i};
+        active = update(active.m_node, eStr);
+        eStr.m_left = active.m_length;
+        active = canonize(active.m_node, eStr);
+    }
+}
 
+bool testAndSplit(Node* n, EdgeString eStr, char ch, const std::string& str, Node** nNode) {
+    return false;
+}
+
+ActiveStore SuffixTree::update(Node *pNode, EdgeString edgeString) {
+    Node* old = &m_root;
+    Node* r = nullptr;
+
+    EdgeString eStr = edgeString;
+    eStr.m_right--;
+
+    const std::string& str = m_stringMap[edgeString.m_stringId];
+    ActiveStore active{pNode, edgeString.m_stringId, edgeString.m_left};
+
+    bool reachedEnd = testAndSplit(pNode, eStr, str[eStr.m_right], str, &r);
+    while (!reachedEnd) {
+        Leaf* leaf = new Leaf();
+        r->m_transitionMap[str[eStr.m_right]] = {{edgeString.m_stringId, edgeString.m_right, MAX_LEN}, leaf};
+
+        if (&m_root != old) {
+            old->m_suffixLink = r;
+        }
+        old = r;
+
+        active = canonize(active.m_node->m_suffixLink, eStr);
+        edgeString.m_left = active.m_length;
+        eStr.m_left = active.m_length;
+
+        reachedEnd = testAndSplit(active.m_node, eStr, str[edgeString.m_right], str, &r);
     }
 
+    if (old != &m_root) {
+        old->m_suffixLink = active.m_node;
+    }
+
+    return active;
+}
+
+ActiveStore SuffixTree::canonize(Node *pNode, EdgeString edgeString) {
+    return ActiveStore();
 }
 
 std::optional<int32_t> SuffixTree::findPivot(const std::string &word, ActiveStore *store) {
@@ -36,23 +81,27 @@ std::optional<int32_t> SuffixTree::findPivot(const std::string &word, ActiveStor
 
     while (matching) {
         Node* currNode = store->m_node;
-        auto& edge = currNode->m_transitionMap[word[indx]];
+        auto& transition = currNode->m_transitionMap[word[indx]];
 
-        if (edge.m_next != nullptr) {
+        if (transition.m_next != nullptr) {
             int32_t offset;
-            const std::string& edgeStr = *edge.m_string;
-            for (offset = 1 ; offset <= edge.m_right - edge.m_left ; ++offset) {
+            const std::string& edgeStr = m_stringMap[transition.m_edgeStr.m_stringId];
+
+            for (offset = 1;
+                 offset <= transition.m_edgeStr.m_right - transition.m_edgeStr.m_left;
+                 ++offset)
+            {
                 if (indx + offset >= word.size()) {
                     matching = false;
                     break;
                 }
-                if (word[indx + offset] != edgeStr[edge.m_left + offset]) {
+                if (word[indx + offset] != edgeStr[transition.m_edgeStr.m_left + offset]) {
                     return indx + offset;
                 }
             }
 
             if (matching) {
-                store->m_node = edge.m_next;
+                store->m_node = transition.m_next;
                 indx += offset;
                 store->m_length = indx;
             }
@@ -62,6 +111,7 @@ std::optional<int32_t> SuffixTree::findPivot(const std::string &word, ActiveStor
         }
     }
 
+    store->m_length = MAX_LEN;
     return std::nullopt;
 }
 
@@ -89,6 +139,8 @@ uint32_t SuffixTree::countSuffix(const std::string &suffix) const {
 uint32_t SuffixTree::countSubstring(const std::string &substring) const {
     return 0;
 }
+
+
 
 
 

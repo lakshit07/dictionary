@@ -7,11 +7,15 @@
 
 class SuffixTree {
     // Set containing all words in the tree
-    const std::unordered_set<std::string> m_words;
+    std::unordered_set<std::string> m_words;
+    // Map containing the index,string pairs
+    std::unordered_map<int32_t, std::string> m_stringMap;
     // Index of the word added
     int32_t m_index = 0;
     // Root of the tree
     Node m_root;
+    // Maximum length of the word added
+    int32_t MAX_LEN = 500;
 
     /**
      * Perform the insertion of the node in the suffix tree
@@ -27,7 +31,23 @@ class SuffixTree {
      * @param store
      * @return
      */
-    static std::optional<int32_t> findPivot(const std::string &word, ActiveStore *store);
+    std::optional<int32_t> findPivot(const std::string &word, ActiveStore *store);
+
+    /**
+     * TODO: add documentation
+     * @param pNode
+     * @param edgeString
+     * @return
+     */
+    ActiveStore update(Node *pNode, EdgeString edgeString);
+
+    /**
+     * TODO: add documentation
+     * @param pNode
+     * @param edgeString
+     * @return
+     */
+    ActiveStore canonize(Node *pNode, EdgeString edgeString);
 
 public:
     void insert(const std::string& word);
@@ -39,5 +59,6 @@ public:
     uint32_t countPrefix(const std::string& prefix) const;
     uint32_t countSuffix(const std::string& suffix) const;
     uint32_t countSubstring(const std::string& substring) const;
+
 };
 
