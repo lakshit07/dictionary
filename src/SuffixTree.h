@@ -11,19 +11,29 @@ class SuffixTree {
     // Map containing the index,string pairs
     std::unordered_map<int32_t, std::string> m_stringMap;
     // Index of the word added
-    int32_t m_index = 0;
+    int32_t m_index;
     // Root of the tree
     Node m_root;
+    // Sink node
+    Sink m_sink;
     // Maximum length of the word added
-    int32_t MAX_LEN = 500;
+    static constexpr int32_t MAX_LEN = 500;
+
+public:
+    SuffixTree() {
+        m_root.m_suffixLink = &m_sink;
+        m_sink.m_suffixLink = &m_root;
+        m_index = 0;
+    }
+
+private:
 
     /**
      * Perform the insertion of the node in the suffix tree
      * @param it iterator to the set containing the string
      * @param index id of the string
      */
-    void insertUtil(std::unordered_set<std::string>::const_iterator it,
-                    int32_t index);
+    void insertUtil(const std::string& word, int32_t index);
 
     /**
      * Find the location to insert the new word
@@ -61,7 +71,10 @@ class SuffixTree {
     bool testAndSplit(Node* n, EdgeString eStr, char ch, const std::string& str,
                       Node** nNode);
 
+    void printNode(const Node* node, bool sameLine, int32_t padding, EdgeString eStr) const;
+
 public:
+    void printTree() const ;
     void insert(const std::string& word);
 
     std::vector<std::string> searchPrefix(const std::string& prefix) const;

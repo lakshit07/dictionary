@@ -94,6 +94,7 @@ bool QueryEngine::init(int argc, const char **argv) {
 }
 
 void QueryEngine::process(std::ostream& outFile) const {
+    m_tree.printTree();
     for (const auto& query : m_queries) {
         if (!query.isValid()) {
             outFile << std::endl;

@@ -33,15 +33,22 @@ struct Transition {
  */
 struct Node {
     std::unordered_map<char, Transition> m_transitionMap;
+    std::unordered_set<int32_t> m_stringIds;
     Node* m_suffixLink;
 
     Node() : m_suffixLink(nullptr) {}
 
-    Transition next(char ch) {
+    virtual Transition next(char ch) {
         if (m_transitionMap.find(ch) == m_transitionMap.end()) {
             return {{0, 0, -1}, nullptr};
         }
         return m_transitionMap[ch];
+    }
+};
+
+struct Sink : Node {
+    Transition next(char ch) override {
+        return Transition({0, 0, 0}, this->m_suffixLink);
     }
 };
 
