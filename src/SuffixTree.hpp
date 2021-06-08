@@ -1,10 +1,8 @@
 #include <iostream>
-#include "SuffixTree.h"
-
+#include <queue>
 
 template <typename EleT>
 void SuffixTree<EleT>::insert(const std::string &word) {
-
     collectionT element;
     element.push_back(static_cast<EleT>(START));
     for (char ch : word) {
@@ -117,7 +115,7 @@ ActiveStore<EleT> SuffixTree<EleT>::canonize(Node<EleT> *pNode, EdgeString edgeS
     const auto& str = m_stringMap[edgeString.m_stringId];
     Transition transition = pNode->next(str[edgeString.m_left]);
 
-    int32_t len;
+    int32_t len = 0;
     while ((len = transition.m_edgeStr.m_right - transition.m_edgeStr.m_left)
             <= edgeString.m_right - edgeString.m_left) {
 
@@ -216,8 +214,9 @@ std::vector<std::string> SuffixTree<EleT>::searchSuffix(const std::string &suffi
     for (int32_t strId : set.value()) {
         auto word = m_stringMap[strId];
         std::string sWord;
-        for (int i = 1 ; i < word.size() - 2 ; i++)
+        for (int i = 1 ; i < word.size() - 2 ; i++) {
             sWord += static_cast<char>(word[i]);
+        }
         ret.push_back(sWord);
     }
     return ret;
@@ -238,8 +237,9 @@ std::vector<std::string> SuffixTree<EleT>::searchSubstring(const std::string &su
     for (int32_t strId : set.value()) {
         auto word = m_stringMap[strId];
         std::string sWord;
-        for (int i = 1 ; i < word.size() - 2 ; i++)
+        for (int i = 1 ; i < word.size() - 2 ; i++) {
             sWord += static_cast<char>(word[i]);
+        }
         ret.push_back(sWord);
     }
     return ret;
@@ -340,7 +340,7 @@ std::optional<std::unordered_set<int32_t>> SuffixTree<EleT>::substringSet(const 
         }
 
         const auto& edgeWord = m_stringMap[transition.m_edgeStr.m_stringId];
-        for (int i = 1 ; i <= transition.m_edgeStr.m_right - transition.m_edgeStr.m_left ; i++) {
+        for (int i = 1 ; i <= transition.m_edgeStr.m_right - transition.m_edgeStr.m_left ; ++i) {
             if (indx + i >= len) {
                 return transition.m_next->m_stringIds;
             }
@@ -370,8 +370,20 @@ void SuffixTree<EleT>::populateIndicesUtil(Node<EleT> &node) {
     }
 }
 
+template<typename EleT>
+SuffixTree<EleT>::~SuffixTree() {
+    std::queue<Node<EleT>*> queue;
+    queue.push(&m_root);
 
+    while (!queue.empty()) {
+        auto* curr = queue.front();
+        queue.pop();
 
+        for (auto child : curr->m_transitionMap) {
+            queue.push(child.second.m_next);
+        }
 
-
-
+        if (curr != &m_root)
+            delete curr;
+    }
+}

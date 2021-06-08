@@ -19,6 +19,7 @@ class SuffixTree {
     Sink<EleT> m_sink;
     // Maximum length of the word added
     static constexpr int32_t MAX_LEN = 500;
+    // Start and end delimiters
     static constexpr char START = '$';
     static constexpr char END = '#';
 
@@ -28,6 +29,8 @@ public:
         m_sink.m_suffixLink = &m_root;
         m_index = 0;
     }
+
+    virtual ~SuffixTree();
 
 private:
 
@@ -47,29 +50,31 @@ private:
     std::optional<int32_t> findPivot(const collectionT& word, ActiveStore<EleT> *store);
 
     /**
-     * TODO: add documentation
-     * @param pNode
-     * @param edgeString
-     * @return
+     * The main part of the Ukkonen algorithm which walks along the active store node
+     * and creates nodes on the way
+     * @param pNode current active store node
+     * @param edgeString current length whose suffix creation is left
+     * @return New active store after node creation/insertion
      */
     ActiveStore<EleT> update(Node<EleT> *pNode, EdgeString edgeString);
 
     /**
-     * TODO: add documentation
-     * @param pNode
-     * @param edgeString
-     * @return
+     * Returns the canonical pair of (pNode, edgeString)
+     * @param pNode the current node
+     * @param edgeString edge string
+     * @return canonical pair
      */
     ActiveStore<EleT> canonize(Node<EleT> *pNode, EdgeString edgeString);
 
     /**
-     * TODO : add documentation
-     * @param n
-     * @param eStr
-     * @param ch
-     * @param str
-     * @param nNode
-     * @return
+     * Checks if (n, eStr) is an end point in the suffix tree.
+     * If not, create a new node
+     * @param n Current node
+     * @param eStr edge to be inserted
+     * @param ch last character of string added
+     * @param str string to be inserted
+     * @param nNode new node created
+     * @return if split happened or not
      */
     bool testAndSplit(Node<EleT>* n, EdgeString eStr, EleT ch, const collectionT& str,
                       Node<EleT>** nNode);
@@ -80,10 +85,20 @@ private:
 
 public:
     void printTree() const ;
+    /**
+     * Insert the word in the suffix tree
+     * @param word word to be inserted
+     */
     void insert(const std::string& word);
 
+    /**
+     * Computes the set of indices of words which have the given substring
+     * @param word substring to be looked for
+     * @return set of indices
+     */
     std::optional<std::unordered_set<int32_t>> substringSet(const collectionT& word);
 
+    // Suffix, Prefix and Substring lookup and counts
     std::vector<std::string> searchPrefix(const std::string& prefix) ;
     std::vector<std::string> searchSuffix(const std::string& suffix) ;
     std::vector<std::string> searchSubstring(const std::string& substring) ;
@@ -92,6 +107,10 @@ public:
     uint32_t countSuffix(const std::string& suffix) ;
     uint32_t countSubstring(const std::string& substring) ;
 
+    /**
+     * Populates the internal nodes with the indices of words whose suffixes
+     * are in its subtree
+     */
     void populateIndices();
 };
 

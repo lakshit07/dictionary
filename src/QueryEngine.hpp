@@ -13,14 +13,11 @@ std::string QueryEngine::sanitize(const std::string &word) {
 }
 
 bool QueryEngine::init(int argc, const char **argv) {
-
-    // Check for command line arguments
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <path of wordList file> <path to queryList file>" << std::endl;
         return false;
     }
 
-    // Check for existence of files
     std::ifstream wordFile(argv[1], std::ifstream::in);
     if (wordFile.fail()) {
         std::cerr << "Failed to open wordFile at " << argv[1];
@@ -33,7 +30,6 @@ bool QueryEngine::init(int argc, const char **argv) {
         return false;
     }
 
-    // Read the words from wordFile
     std::string word;
     while (wordFile >> word) {
         const auto& normWord = sanitize((word));
@@ -45,7 +41,7 @@ bool QueryEngine::init(int argc, const char **argv) {
     }
 
     m_tree.populateIndices();
-    // Read the queries from queryFile
+
     std::string type;
     uint32_t lineNum = 1;
 
@@ -100,8 +96,6 @@ bool QueryEngine::init(int argc, const char **argv) {
 }
 
 void QueryEngine::process(std::ostream& outFile) {
-    //m_tree.printTree();
-
     for (const auto& query : m_queries) {
         if (!query.isValid()) {
             outFile << std::endl;
