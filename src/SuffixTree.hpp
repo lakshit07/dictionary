@@ -187,42 +187,105 @@ std::vector<std::string> SuffixTree<EleT>::searchPrefix(const std::string &prefi
     if (!set) {
         return {};
     }
-    else {
-        std::vector<std::string> ret;
-        for (int32_t strId : set.value()) {
-            auto word = m_stringMap[strId];
-            std::string sWord;
-            for (int i = 1 ; i < word.size() - 2 ; i++)
-                sWord += static_cast<char>(word[i]);
-            ret.push_back(sWord);
-        }
-        return ret;
+
+    std::vector<std::string> ret;
+    for (int32_t strId : set.value()) {
+        auto word = m_stringMap[strId];
+        std::string sWord;
+        for (int i = 1 ; i < word.size() - 2 ; i++)
+            sWord += static_cast<char>(word[i]);
+        ret.push_back(sWord);
     }
+
+    return ret;
 }
 
 template <typename EleT>
-std::vector<std::string> SuffixTree<EleT>::searchSuffix(const std::string &suffix) const {
-    return std::vector<std::string>();
+std::vector<std::string> SuffixTree<EleT>::searchSuffix(const std::string &suffix)  {
+    collectionT query;
+    for (char ch : suffix) {
+        query.push_back(static_cast<EleT>(ch));
+    }
+    query.push_back(static_cast<int32_t>(END));
+
+    auto set = substringSet(query);
+    if (!set) {
+        return {};
+    }
+    std::vector<std::string> ret;
+    for (int32_t strId : set.value()) {
+        auto word = m_stringMap[strId];
+        std::string sWord;
+        for (int i = 1 ; i < word.size() - 2 ; i++)
+            sWord += static_cast<char>(word[i]);
+        ret.push_back(sWord);
+    }
+    return ret;
 }
 
 template <typename EleT>
-std::vector<std::string> SuffixTree<EleT>::searchSubstring(const std::string &substring) const {
-    return std::vector<std::string>();
+std::vector<std::string> SuffixTree<EleT>::searchSubstring(const std::string &substring)  {
+    collectionT query;
+    for (char ch : substring) {
+        query.push_back(static_cast<EleT>(ch));
+    }
+
+    auto set = substringSet(query);
+    if (!set) {
+        return {};
+    }
+    std::vector<std::string> ret;
+    for (int32_t strId : set.value()) {
+        auto word = m_stringMap[strId];
+        std::string sWord;
+        for (int i = 1 ; i < word.size() - 2 ; i++)
+            sWord += static_cast<char>(word[i]);
+        ret.push_back(sWord);
+    }
+    return ret;
 }
 
 template <typename EleT>
-uint32_t SuffixTree<EleT>::countPrefix(const std::string &prefix) const {
-    return 0;
+uint32_t SuffixTree<EleT>::countPrefix(const std::string &prefix)  {
+    collectionT query = {static_cast<EleT>(START)};
+    for (char ch : prefix) {
+        query.push_back(static_cast<EleT>(ch));
+    }
+    auto set = substringSet(query);
+    if (!set) {
+        return 0;
+    }
+    return set.value().size();
 }
 
 template <typename EleT>
-uint32_t SuffixTree<EleT>::countSuffix(const std::string &suffix) const {
-    return 0;
+uint32_t SuffixTree<EleT>::countSuffix(const std::string &suffix)  {
+    collectionT query;
+    for (char ch : suffix) {
+        query.push_back(static_cast<EleT>(ch));
+    }
+    query.push_back(static_cast<int32_t>(END));
+
+    auto set = substringSet(query);
+    if (!set) {
+        return {};
+    }
+    return set.value().size();
 }
 
 template <typename EleT>
-uint32_t SuffixTree<EleT>::countSubstring(const std::string &substring) const {
-    return 0;
+uint32_t SuffixTree<EleT>::countSubstring(const std::string &substring)  {
+    collectionT query;
+    for (char ch : substring) {
+        query.push_back(static_cast<EleT>(ch));
+    }
+
+    auto set = substringSet(query);
+    if (!set) {
+        return {};
+    }
+
+    return set.value().size();
 }
 
 template <typename EleT>
@@ -266,12 +329,31 @@ void SuffixTree<EleT>::printTree() const {
 
 template <typename EleT>
 std::optional<std::unordered_set<int32_t>> SuffixTree<EleT>::substringSet(const collectionT& word) {
-    ActiveStore<EleT> store{&m_root, -1, 0};
+    Node<EleT>* current = &m_root;
+    int32_t indx = 0;
+    int len = word.size();
 
-    if (!findPivot(word, &store)) {
-        return store.m_node->next(word[0]).m_next->m_stringIds;
+    while (true) {
+        const auto& transition = current->next(word[indx]);
+        if (transition.m_next == nullptr) {
+            return std::nullopt;
+        }
+
+        const auto& edgeWord = m_stringMap[transition.m_edgeStr.m_stringId];
+        for (int i = 1 ; i <= transition.m_edgeStr.m_right - transition.m_edgeStr.m_left ; i++) {
+            if (indx + i >= len) {
+                return transition.m_next->m_stringIds;
+            }
+            if (word[indx + i] != edgeWord[transition.m_edgeStr.m_left + i]) {
+                return std::nullopt;
+            }
+        }
+
+        indx += transition.m_edgeStr.m_right - transition.m_edgeStr.m_left + 1;
+        current = transition.m_next;
+        if (indx == len)
+            return current->m_stringIds;
     }
-    return std::nullopt;
 }
 
 template<typename EleT>

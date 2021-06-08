@@ -85,12 +85,12 @@ public:
     std::optional<std::unordered_set<int32_t>> substringSet(const collectionT& word);
 
     std::vector<std::string> searchPrefix(const std::string& prefix) ;
-    std::vector<std::string> searchSuffix(const std::string& suffix) const;
-    std::vector<std::string> searchSubstring(const std::string& substring) const;
+    std::vector<std::string> searchSuffix(const std::string& suffix) ;
+    std::vector<std::string> searchSubstring(const std::string& substring) ;
 
-    uint32_t countPrefix(const std::string& prefix) const;
-    uint32_t countSuffix(const std::string& suffix) const;
-    uint32_t countSubstring(const std::string& substring) const;
+    uint32_t countPrefix(const std::string& prefix) ;
+    uint32_t countSuffix(const std::string& suffix) ;
+    uint32_t countSubstring(const std::string& substring) ;
 
     void populateIndices();
 };
