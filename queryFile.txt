@@ -1,8 +1,1 @@
-S1 app
-S2 cream
-S3 ac
-S4 m
-C1 a
-C2 e
-C3 ra
-C4 x
+S1 al

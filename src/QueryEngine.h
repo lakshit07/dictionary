@@ -53,8 +53,9 @@ class QueryEngine {
      */
     static std::string sanitize(const std::string& word);
 
-    SuffixTree m_tree;
+    SuffixTree<int32_t> m_tree;
     std::vector<Query> m_queries;
+    std::unordered_set<std::string> m_wordList;
 
 public:
     /**
@@ -67,7 +68,7 @@ public:
     /***
      * Runs through the queries in the queryFile and processes them
      */
-    void process(std::ostream& outFile = std::cout) const;
+    void process(std::ostream& outFile = std::cout);
 
 };
 

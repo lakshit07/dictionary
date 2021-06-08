@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 // Forward declaration
+template <typename EleT>
 struct Node;
 
 /**
@@ -19,26 +20,28 @@ struct EdgeString {
         m_stringId(stringId), m_left(left), m_right(right) {}
 };
 
+template <typename EleT>
 struct Transition {
     EdgeString m_edgeStr;
-    Node* m_next;
+    Node<EleT>* m_next;
 
     Transition() : m_next(nullptr) {}
-    Transition(const EdgeString &mEdgeStr, Node *mNext) : m_edgeStr(mEdgeStr),
+    Transition(const EdgeString &mEdgeStr, Node<EleT> *mNext) : m_edgeStr(mEdgeStr),
                                                           m_next(mNext) {}
 };
 
 /**
  * Node representation of the suffix tree
  */
+template <typename EleT>
 struct Node {
-    std::unordered_map<char, Transition> m_transitionMap;
+    std::unordered_map<EleT, Transition<EleT>> m_transitionMap;
     std::unordered_set<int32_t> m_stringIds;
     Node* m_suffixLink;
 
     Node() : m_suffixLink(nullptr) {}
 
-    virtual Transition next(char ch) {
+    virtual Transition<EleT> next(EleT ch) {
         if (m_transitionMap.find(ch) == m_transitionMap.end()) {
             return {{0, 0, -1}, nullptr};
         }
@@ -46,22 +49,23 @@ struct Node {
     }
 };
 
-struct Sink : Node {
-    Transition next(char ch) override {
+template <typename EleT>
+struct Sink : Node <EleT> {
+    Transition<EleT> next(EleT ch) override {
         return Transition({0, 0, 0}, this->m_suffixLink);
     }
 };
 
-struct Leaf : Node {
-    int32_t m_stringId;
-    int32_t m_position;
+template <typename EleT>
+struct Leaf : Node <EleT> {
 };
 
 /**
  * Data structure to store the active data members
  */
+template <typename EleT>
 struct ActiveStore {
-    Node*   m_node {nullptr};
-    int32_t m_edge {0};
+    Node<EleT>*   m_node {nullptr};
+    int32_t m_strId {0};
     int32_t m_length {0};
 };

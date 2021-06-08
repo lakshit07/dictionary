@@ -36,9 +36,15 @@ bool QueryEngine::init(int argc, const char **argv) {
     // Read the words from wordFile
     std::string word;
     while (wordFile >> word) {
-        m_tree.insert(sanitize(word));
+        const auto& normWord = sanitize((word));
+        if (m_wordList.find(normWord) != m_wordList.end()) {
+            continue;
+        }
+        m_wordList.insert(normWord);
+        m_tree.insert(normWord);
     }
 
+    m_tree.populateIndices();
     // Read the queries from queryFile
     std::string type;
     uint32_t lineNum = 1;
@@ -93,8 +99,9 @@ bool QueryEngine::init(int argc, const char **argv) {
     return true;
 }
 
-void QueryEngine::process(std::ostream& outFile) const {
-    m_tree.printTree();
+void QueryEngine::process(std::ostream& outFile) {
+    //m_tree.printTree();
+
     for (const auto& query : m_queries) {
         if (!query.isValid()) {
             outFile << std::endl;
