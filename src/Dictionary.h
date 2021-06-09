@@ -6,9 +6,9 @@
 #include <fstream>
 
 /***
- * Query Engine loads the dictionary word file and then answers the queries based on them
+ * Load the word and query file and then answers the queries
  */
-class QueryEngine {
+class Dictionary {
 
     /**
      * Structure to represent all types of queries
@@ -72,4 +72,4 @@ public:
 
 };
 
-#include <src/QueryEngine.hpp>
+#include <src/Dictionary.hpp>

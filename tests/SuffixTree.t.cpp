@@ -1,4 +1,4 @@
-#include <src/QueryEngine.h>
+#include <src/Dictionary.h>
 
 #include <gtest/gtest.h>
 

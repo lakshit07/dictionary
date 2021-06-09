@@ -190,8 +190,9 @@ std::vector<std::string> SuffixTree<EleT>::searchPrefix(const std::string &prefi
     for (int32_t strId : set.value()) {
         auto word = m_stringMap[strId];
         std::string sWord;
-        for (int i = 1 ; i < word.size() - 2 ; i++)
+        for (int i = 1 ; i < word.size() - 2 ; i++) {
             sWord += static_cast<char>(word[i]);
+        }
         ret.push_back(sWord);
     }
 
@@ -351,8 +352,9 @@ std::optional<std::unordered_set<int32_t>> SuffixTree<EleT>::substringSet(const 
 
         indx += transition.m_edgeStr.m_right - transition.m_edgeStr.m_left + 1;
         current = transition.m_next;
-        if (indx == len)
+        if (indx == len) {
             return current->m_stringIds;
+        }
     }
 }
 
@@ -383,7 +385,8 @@ SuffixTree<EleT>::~SuffixTree() {
             queue.push(child.second.m_next);
         }
 
-        if (curr != &m_root)
+        if (curr != &m_root) {
             delete curr;
+        }
     }
 }

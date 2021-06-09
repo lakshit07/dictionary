@@ -2,7 +2,7 @@
 #include <iostream>
 #include <utility>
 
-std::string QueryEngine::sanitize(const std::string &word) {
+std::string Dictionary::sanitize(const std::string &word) {
     std::string normalizedWord;
     for (char ch : word) {
         if (!isalnum(ch))
@@ -12,7 +12,7 @@ std::string QueryEngine::sanitize(const std::string &word) {
     return normalizedWord;
 }
 
-bool QueryEngine::init(int argc, const char **argv) {
+bool Dictionary::init(int argc, const char **argv) {
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <path of wordList file> <path to queryList file>" << std::endl;
         return false;
@@ -95,7 +95,7 @@ bool QueryEngine::init(int argc, const char **argv) {
     return true;
 }
 
-void QueryEngine::process(std::ostream& outFile) {
+void Dictionary::process(std::ostream& outFile) {
     for (const auto& query : m_queries) {
         if (!query.isValid()) {
             outFile << std::endl;
