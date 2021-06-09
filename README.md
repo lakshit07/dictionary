@@ -26,7 +26,7 @@ A suffix tree supports substring search in general and for other operations, the
 * The number in the end helps create a distinct node for each duplicate suffix in the word  
 
 ### Algorithm
-Suffix tree construction is performed using the [Ukkonen's algorithm](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf)   
+Suffix tree construction is performed using the [Ukkonen's algorithm](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf)
 for online suffix tree creation. Each suffix of every word is represented as a leaf node in this tree. Each node (internal and leaf) 
 additionally stores the words (*indices of words in actual implementation*) all the nodes in its subtree are part of.  
 
