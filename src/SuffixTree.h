@@ -79,12 +79,9 @@ private:
     bool testAndSplit(Node<EleT>* n, EdgeString eStr, EleT ch, const collectionT& str,
                       Node<EleT>** nNode);
 
-    void printNode(const Node<EleT>* node, bool sameLine, int32_t padding, EdgeString eStr) const;
-
     void populateIndicesUtil(Node<EleT>& node);
 
 public:
-    void printTree() const ;
     /**
      * Insert the word in the suffix tree
      * @param word word to be inserted

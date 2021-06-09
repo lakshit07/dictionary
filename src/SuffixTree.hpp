@@ -290,45 +290,6 @@ uint32_t SuffixTree<EleT>::countSubstring(const std::string &substring)  {
 }
 
 template <typename EleT>
-void SuffixTree<EleT>::printNode(const Node<EleT> *node, bool sameLine, int32_t padding,
-                           EdgeString eStr) const {
-    int32_t delta = 0;
-    if (!sameLine) {
-        for (int i = 0 ; i < padding ; i++)
-            std::cout << " ";
-    }
-
-    if (eStr.m_left <= eStr.m_right) {
-        auto s = m_stringMap.find(eStr.m_stringId)->second;
-        for (int i = eStr.m_left; i <= eStr.m_right and i < s.size(); i++)
-            std::cout << s[i] << " ";
-
-        std::cout << " - | ";
-        for (int x : node->m_stringIds)
-            std::cout << x << " ";
-        std::cout << "| ";
-
-        delta = eStr.m_right - eStr.m_left + 2;
-        if (eStr.m_right == MAX_LEN)
-            delta = s.size() - eStr.m_left;
-    }
-
-    sameLine = true;
-    for (auto x : node->m_transitionMap) {
-        printNode(x.second.m_next, sameLine, padding + delta, x.second.m_edgeStr);
-        sameLine = false;
-    }
-
-    if (sameLine)
-        std::cout << "##" << std::endl;
-}
-
-template <typename EleT>
-void SuffixTree<EleT>::printTree() const {
-    printNode(&m_root, true, 0, {0, 0, -1});
-}
-
-template <typename EleT>
 std::optional<std::unordered_set<int32_t>> SuffixTree<EleT>::substringSet(const collectionT& word) {
     Node<EleT>* current = &m_root;
     int32_t indx = 0;

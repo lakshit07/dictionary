@@ -13,11 +13,12 @@ A C++ implementation of a dictionary which supports the following operation -
 Design Details
 --------------
 
-The basic structure used is to implement the dictionary is a *generalized suffix tree*. It stores each of the word in
-the dictionary in the form of a tree such that each suffix has a root to node path.  
+The basic structure used to implement this dictionary is a *generalized suffix tree*. It stores each of the words in
+the dictionary in the form of a tree such that each suffix of every word has a root to a leaf path.  
 
-Each word is appended with a '$' and prepended with a '#' followed by the line number on which it appears.  
-For example, the words apple, mango, orange will be inserted into the suffix tree as $apple#1, $mango#2 and $orange#3.  
+Each word is prepended with a '$' and appended with a '#' followed by the line number on which it appears.  
+For example, the words apple, mango, orange will be inserted into the suffix tree as $apple#1, $mango#2 and $orange#3.
+Each letter is further converted to its ascii numerical value in the actual implementation.
 
 A suffix tree supports substring search in general and for other operations, these special characters are used.  
 * '$' helps in prefix query. A prefix query for string S is a substring query of $S  
@@ -26,15 +27,15 @@ A suffix tree supports substring search in general and for other operations, the
 
 ### Algorithm
 Suffix tree construction is performed using the [Ukkonen's algorithm](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf)   
-for online suffix tree creation. Each suffix of every word is represented as a node in this tree. Each node (internal and leaf) 
+for online suffix tree creation. Each suffix of every word is represented as a leaf node in this tree. Each node (internal and leaf) 
 additionally stores the words (*indices of words in actual implementation*) all the nodes in its subtree are part of.  
 
 A substring query is performed by tracing the path from the root along with the edges corresponding to the string.
-On reaching the final node along this path, the result is the set of words on this node. Prefix and suffix queries can
-be reduced to substring search and mentioned above.  
+On reaching the final node along this path, the result is the set of words on this node (representing the words in its subtree). 
+Prefix and suffix queries can be reduced to substring search as mentioned above.  
 
 ### Complexity
-The suffix tree construction is linear in the total size of the words inserted. If *N* words are to be inserted in the tree
+The suffix tree construction is linear in the total size of all the words inserted. If *N* words are to be inserted in the tree
 and the average length of each word is *W*, the suffix tree creation has complexity *O(N.W)*.
 
 The substring query of a string *s* of length *S* has complexity *O(S)*. Prefix and suffix queries also have the same
